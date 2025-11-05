@@ -33,6 +33,9 @@ export function TrendingDetail() {
   const [data, setData] = useState<TrendingDetailData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  
+  // URL에서 쿼리 파라미터 가져오기
+  const queryParams = new URLSearchParams(window.location.search);
 
   useEffect(() => {
     const fetchTrendingDetail = async () => {
@@ -56,7 +59,9 @@ export function TrendingDetail() {
   }, [id]);
 
   const handleBack = () => {
-    navigate(-1);
+    // 쿼리 파라미터를 유지하면서 목록으로 돌아가기
+    const queryString = queryParams.toString();
+    navigate(queryString ? `/?${queryString}` : '/');
   };
 
   // 날짜 포맷 함수
@@ -143,7 +148,7 @@ export function TrendingDetail() {
                   #{data.rank}
                 </span>
                 <span className="px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-sm">
-                  {data.category}
+                  {data.llmResult.category}
                 </span>
               </div>
               <h1 className="text-blue-600 mb-4">{data.llmResult.keyword}</h1>
@@ -174,7 +179,7 @@ export function TrendingDetail() {
 
           {/* AI Summary Card */}
           <div className="flex iteddms-center gap-3 mb-4">
-              <h2 className="text-purple-900">AI 한줄 요약</h2>
+            <h2 className="text-purple-900">AI 한줄 요약</h2>
           </div>
           <p className="text-gray-700">
             {data.llmResult.description || "상세 설명이 없습니다."}
@@ -183,9 +188,7 @@ export function TrendingDetail() {
           <div className="flex iteddms-center gap-3 mb-4">
             <h2 className="text-purple-900">AI 원문 요약</h2>
           </div>
-          <p className="text-gray-800 leading-relaxed">
-            {aiSummary.summary}
-          </p>
+          <p className="text-gray-800 leading-relaxed">{aiSummary.summary}</p>
           <br></br>
           <div className="mb-6">
             <h3 className="mb-3">관련 태그</h3>
@@ -235,7 +238,7 @@ export function TrendingDetail() {
                 <h4 className="mb-2">{article.title}</h4>
                 <div className="flex items-center gap-2 text-sm text-gray-600">
                   {/* 뉴스 URL */}
-                  {/* <span>{article.source}</span> */}
+                  <span className="overflow-hidden">{article.source}</span>
                   {/* 뉴스 시간 */}
                   {/* <span>{article.time}</span> */}
                 </div>
