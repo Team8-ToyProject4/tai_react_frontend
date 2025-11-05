@@ -58,6 +58,62 @@ export function TrendingList() {
   const [loadMoreError, setLoadMoreError] = useState<string | null>(null);
   const loaderRef = useRef<HTMLDivElement | null>(null);
 
+  const scrollToTop = useCallback(() => {
+    if (typeof window === "undefined") {
+      return;
+    }
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }, []);
+
+  const handleYearChange = useCallback(
+    (value: number) => {
+      setYear(value);
+      scrollToTop();
+    },
+    [scrollToTop],
+  );
+
+  const handleMonthChange = useCallback(
+    (value: number) => {
+      setMonth(value);
+      scrollToTop();
+    },
+    [scrollToTop],
+  );
+
+  const handleDayChange = useCallback(
+    (value: number) => {
+      setDay(value);
+      scrollToTop();
+    },
+    [scrollToTop],
+  );
+
+  const handleTimeFilterChange = useCallback(
+    (value: string) => {
+      setTimeFilter(value);
+      scrollToTop();
+    },
+    [scrollToTop],
+  );
+
+  const handleCategoryFilterChange = useCallback(
+    (value: string) => {
+      setCategoryFilter(value);
+      scrollToTop();
+    },
+    [scrollToTop],
+  );
+
+  const handleResetToNow = useCallback(() => {
+    const current = new Date();
+    setYear(current.getFullYear());
+    setMonth(current.getMonth() + 1);
+    setDay(current.getDate());
+    setTimeFilter(String(current.getHours()).padStart(2, "0"));
+    scrollToTop();
+  }, [scrollToTop]);
+
   // 필터 상태가 변경될 때마다 URL 업데이트
   useEffect(() => {
     const params = new URLSearchParams();
@@ -264,22 +320,16 @@ export function TrendingList() {
             timeFilter={timeFilter}
             categoryFilter={categoryFilter}
             sortFilter={sortFilter}
-            onTimeFilterChange={setTimeFilter}
-            onCategoryFilterChange={setCategoryFilter}
+            onTimeFilterChange={handleTimeFilterChange}
+            onCategoryFilterChange={handleCategoryFilterChange}
             onSortFilterChange={setSortFilter}
             year={year}
             month={month}
             day={day}
-            onYearChange={setYear}
-            onMonthChange={setMonth}
-            onDayChange={setDay}
-            onResetToNow={() => {
-              const n = new Date();
-              setYear(n.getFullYear());
-              setMonth(n.getMonth() + 1);
-              setDay(n.getDate());
-              setTimeFilter(String(n.getHours()).padStart(2, "0"));
-            }}
+            onYearChange={handleYearChange}
+            onMonthChange={handleMonthChange}
+            onDayChange={handleDayChange}
+            onResetToNow={handleResetToNow}
           />
         </div>
         <div className="my-4">
