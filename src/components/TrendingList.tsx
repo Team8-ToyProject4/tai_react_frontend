@@ -68,7 +68,15 @@ export function TrendingList() {
     params.set("category", categoryFilter);
     params.set("sort", sortFilter);
     setSearchParams(params, { replace: true });
-  }, [year, month, day, timeFilter, categoryFilter, sortFilter, setSearchParams]);
+  }, [
+    year,
+    month,
+    day,
+    timeFilter,
+    categoryFilter,
+    sortFilter,
+    setSearchParams,
+  ]);
 
   // 선택한 연/월/일과 시간 필터로 타겟 시각 구성
   const getTargetDate = (): Date => {
@@ -100,8 +108,12 @@ export function TrendingList() {
 
     if (sortFilter === "volume") {
       return [...filtered].sort((a, b) => {
-        const aVolume = parseInt(a.approx_traffic.replace(/[^0-9]/g, "") || "0");
-        const bVolume = parseInt(b.approx_traffic.replace(/[^0-9]/g, "") || "0");
+        const aVolume = parseInt(
+          a.approx_traffic.replace(/[^0-9]/g, "") || "0"
+        );
+        const bVolume = parseInt(
+          b.approx_traffic.replace(/[^0-9]/g, "") || "0"
+        );
         return bVolume - aVolume;
       });
     }
@@ -116,7 +128,9 @@ export function TrendingList() {
 
   const fetchTrendsForDate = useCallback(async (target: Date) => {
     const formatted = format(target, "yyyy-MM-dd'T'HH:mm:ss");
-    const response = await api.get(`/trend?targetDate=${encodeURIComponent(formatted)}`);
+    const response = await api.get(
+      `/trend?targetDate=${encodeURIComponent(formatted)}`
+    );
     return response.data as TrendingData[];
   }, []);
 
@@ -177,7 +191,9 @@ export function TrendingList() {
       const filtered = filterByHour(data, nextDate);
 
       setSections((prev) => {
-        const exists = prev.some((section) => section.targetDate === nextDate.getTime());
+        const exists = prev.some(
+          (section) => section.targetDate === nextDate.getTime()
+        );
         if (exists) {
           return prev;
         }
@@ -192,7 +208,9 @@ export function TrendingList() {
       });
     } catch (err) {
       console.error("이전 시간대 데이터를 불러오는 중 오류 발생:", err);
-      setLoadMoreError("이전 시간대 데이터를 불러오는 데 실패했습니다. 잠시 후 다시 시도해주세요.");
+      setLoadMoreError(
+        "이전 시간대 데이터를 불러오는 데 실패했습니다. 잠시 후 다시 시도해주세요."
+      );
       setHasMore(false);
     } finally {
       setIsLoadingMore(false);
@@ -238,7 +256,7 @@ export function TrendingList() {
     sections.length > 0 ? applyCategoryAndSort(sections[0].items) : [];
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-background transition-colors duration-300">
       <div className="max-w-4xl mx-auto px-4 py-8">
         <SearchHeader />
         <FilterBar
@@ -262,12 +280,11 @@ export function TrendingList() {
             setTimeFilter(String(n.getHours()).padStart(2, "0"));
           }}
         />
-
         <div className="mb-6">
-          <p className="text-gray-600">
+          <p className="text-muted-foreground">
             {format(getTargetDate(), "yyyy년 M월 d일 (E) a h시", { locale: ko })} 기준
           </p>
-          <p className="text-gray-600">
+          <p className="text-muted-foreground">
             {initialDisplayItems.length}개의 급상승 검색어
           </p>
         </div>
@@ -276,38 +293,42 @@ export function TrendingList() {
           {isInitialLoading ? (
             <div className="text-center py-10">
               <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500 mx-auto"></div>
-              <p className="mt-2 text-gray-600">로딩 중...</p>
+              <p className="mt-2 text-muted-foreground">로딩 중...</p>
             </div>
           ) : error ? (
             <div className="text-center py-10 text-red-500">{error}</div>
           ) : (
             <>
               {sections.length === 0 ? (
-                <div className="text-center py-10 text-gray-500">
+                <div className="text-center py-10 text-muted-foreground">
                   표시할 트렌드가 없습니다.
                 </div>
               ) : (
                 sections.map((section, index) => {
                   const sectionDate = new Date(section.targetDate);
                   const displayItems = applyCategoryAndSort(section.items);
-                  const boundaryLabel = format(sectionDate, "yyyy년 M월 d일 (E) a h시", {
-                    locale: ko,
-                  });
+                  const boundaryLabel = format(
+                    sectionDate,
+                    "yyyy년 M월 d일 (E) a h시",
+                    {
+                      locale: ko,
+                    }
+                  );
 
                   return (
                     <div key={section.id} className="space-y-4">
                       {index > 0 && (
                         <div className="flex items-center gap-4 py-6">
-                          <div className="flex-1 border-t border-dashed border-gray-300" />
-                          <span className="text-sm text-gray-500 whitespace-nowrap">
+                          <div className="flex-1 border-t border-dashed border-border" />
+                          <span className="text-sm text-muted-foreground whitespace-nowrap">
                             {boundaryLabel}
                           </span>
-                          <div className="flex-1 border-t border-dashed border-gray-300" />
+                          <div className="flex-1 border-t border-dashed border-border" />
                         </div>
                       )}
 
                       {displayItems.length === 0 ? (
-                        <div className="text-center py-6 text-gray-400">
+                        <div className="text-center py-6 text-muted-foreground/70">
                           이 시간대의 표시할 트렌드가 없습니다.
                         </div>
                       ) : (
@@ -321,7 +342,9 @@ export function TrendingList() {
                                 ...item,
                                 title: item.keyword,
                                 searchVolume: item.approx_traffic,
-                                growthRate: parseGrowthRate(item.approx_traffic),
+                                growthRate: parseGrowthRate(
+                                  item.approx_traffic
+                                ),
                               }}
                             />
                           </div>
@@ -333,12 +356,14 @@ export function TrendingList() {
               )}
               <div ref={loaderRef} className="h-10" />
               {isLoadingMore && (
-                <div className="text-center py-6 text-gray-500">
+                <div className="text-center py-6 text-muted-foreground">
                   이전 시간대 로딩 중...
                 </div>
               )}
               {loadMoreError && (
-                <div className="text-center py-6 text-red-500">{loadMoreError}</div>
+                <div className="text-center py-6 text-red-500">
+                  {loadMoreError}
+                </div>
               )}
             </>
           )}
