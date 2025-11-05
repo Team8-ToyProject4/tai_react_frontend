@@ -13,10 +13,6 @@ export function SearchHeader() {
         </p>
       </div>
       <div className="flex items-center gap-3">
-        <div className="hidden sm:flex items-center gap-2 rounded-full border border-border bg-card/80 px-3 py-2 text-sm text-muted-foreground dark:text-gray-300">
-          <Search size={16} />
-          <span>트렌드 탐색</span>
-        </div>
         <ThemeToggle />
       </div>
     </div>
