@@ -60,9 +60,33 @@ export function TrendingDetail() {
   }, [id]);
 
   const handleBack = () => {
-    // 쿼리 파라미터를 유지하면서 목록으로 돌아가기
+    if (data?.createdAt) {
+      const createdDate = new Date(data.createdAt);
+      if (!Number.isNaN(createdDate.getTime())) {
+        const params = new URLSearchParams();
+        params.set("year", String(createdDate.getFullYear()));
+        params.set("month", String(createdDate.getMonth() + 1));
+        params.set("day", String(createdDate.getDate()));
+        params.set("time", String(createdDate.getHours()).padStart(2, "0"));
+
+        // 기존 정렬/카테고리 필터가 있다면 함께 전달
+        const category = queryParams.get("category");
+        if (category) {
+          params.set("category", category);
+        }
+        const sort = queryParams.get("sort");
+        if (sort) {
+          params.set("sort", sort);
+        }
+
+        navigate(`/?${params.toString()}`);
+        return;
+      }
+    }
+
+    // 생성 시간이 없거나 파싱에 실패한 경우 기존 쿼리 파라미터 유지
     const queryString = queryParams.toString();
-    navigate(queryString ? `/?${queryString}` : '/');
+    navigate(queryString ? `/?${queryString}` : "/");
   };
 
   // 날짜 포맷 함수
